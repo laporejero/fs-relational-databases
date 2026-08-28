@@ -2,16 +2,24 @@ const router = require('express').Router()
 
 const { Blog } = require('../models')
 
-router.get('/', async (req, res) => {
-  const blogs = await Blog.findAll()
-
-  console.log(JSON.stringify(blogs, null, 2))
-  res.json(blogs)
+router.get('/', async (req, res, next) => {
+  try {
+    const blogs = await Blog.findAll()
+    res.json(blogs)
+  } catch (error) {
+    next(error)
+  }
 })
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
   try {
     const { author, url, title } = req.body
+
+    if (typeof author !== 'string') {
+      return res.status(400).json({
+        error: 'author must be a string'
+      })
+    }
 
     const blog = await Blog.create({
       author,
@@ -21,16 +29,27 @@ router.post('/', async (req, res) => {
 
     return res.json(blog)
   } catch (error) {
-    return res.status(400).json({ error: error.message })
+    next(error)
   }
 })
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req, res, next) => {
+  try {
     const blog = await Blog.findByPk(req.params.id)
+
+    if (!blog) {
+      return res.status(404).json({
+        error: 'Blog not found'
+      })
+    }
+
     res.json(blog)
+  } catch (error) {
+    next(error)
+  }
 })
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', async (req, res, next) => {
   try {
     const blog = await Blog.findByPk(req.params.id)
     if (!blog) {
@@ -43,16 +62,16 @@ router.put('/:id', async (req, res) => {
 
     return res.json(blog)
   } catch (error) {
-    return res.status(400).json({ error: error.message })
+    next(error)
   }
 })
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async (req, res, next) => {
   try {
     const blog = await Blog.findByPk(req.params.id)
     if (!blog) {
       return res.status(404).json({
-        message: 'Blog not found'
+        error: 'Blog not found'
       })
     }
 
@@ -60,7 +79,7 @@ router.delete('/:id', async (req, res) => {
 
     res.json({ message: 'Blog deleted successfully', blog })
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    next(error)
   }
 })
 
