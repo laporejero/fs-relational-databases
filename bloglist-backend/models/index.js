@@ -1,7 +1,11 @@
 const Blog = require('./blog')
+const User = require('./user')
 
-Blog.sync().then(() => {
+Blog.sync({ alter: true }).then(() => {
   console.log('Blog table synchronized')
 })
+User.sync({ alter: true }).then(() => {
+  console.log('User table synchronized')
+})
 
-module.exports = { Blog }
+module.exports = { Blog, User }
