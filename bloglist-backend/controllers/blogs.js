@@ -1,8 +1,7 @@
 const router = require('express').Router()
-const jwt = require('jsonwebtoken')
+const tokenExtractor = require('../middleware/tokenExtractor')
 
 const { Blog, User } = require('../models')
-const { SECRET } = require('../util/config')
 
 router.get('/', async (req, res, next) => {
   try {
@@ -12,20 +11,6 @@ router.get('/', async (req, res, next) => {
     next(error)
   }
 })
-
-const tokenExtractor  = (req, res, next) => {
-  const authorization = req.get('authorization')
-  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    try {
-      req.decodedToken = jwt.verify(authorization.substring(7), SECRET)
-    } catch (error) {
-      return res.status(401).json({ error: 'token invalid' })
-    }
-  } else {
-    return res.status(401).json({ error: 'token missing' })
-  }
-  next()
-}
 
 router.post('/', tokenExtractor, async (req, res, next) => {
   try {
@@ -78,7 +63,7 @@ router.put('/:id', async (req, res, next) => {
   }
 })
 
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', tokenExtractor, async (req, res, next) => {
   try {
     const blog = await Blog.findByPk(req.params.id)
     if (!blog) {
@@ -87,9 +72,15 @@ router.delete('/:id', async (req, res, next) => {
       })
     }
 
+    if (blog.userId !== req.decodedToken.id) {
+      return res.status(403).json({
+        error: 'only the creator can delete the blog'
+      })
+    }
+
     await blog.destroy()
 
-    res.json({ message: 'Blog deleted successfully', blog })
+    res.status(204).end()
   } catch (error) {
     next(error)
   }
