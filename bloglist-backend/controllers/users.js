@@ -7,7 +7,10 @@ router.get('/', async (req, res, next) => {
     try {
         const users = await User.findAll({
             include: {
-                model: Blog
+                model: Blog,
+                attributes: {
+                    exclude: ['userId']
+                }
             },
             attributes: {
                 exclude: ['passwordHash']
@@ -68,7 +71,7 @@ router.put('/:username', async (req, res, next) => {
         const user = await User.findOne({
             where: {
                 username: req.params.username
-            }
+            },
         })
 
         if (!user) {

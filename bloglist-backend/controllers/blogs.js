@@ -5,7 +5,13 @@ const { Blog, User } = require('../models')
 
 router.get('/', async (req, res, next) => {
   try {
-    const blogs = await Blog.findAll()
+    const blogs = await Blog.findAll({
+      attributes: { exclude: ['userId'] },
+      include: {
+        model: User,
+        attributes: ['name']
+      }
+    })
     res.json(blogs)
   } catch (error) {
     next(error)
@@ -32,7 +38,13 @@ router.post('/', tokenExtractor, async (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
   try {
-    const blog = await Blog.findByPk(req.params.id)
+    const blog = await Blog.findByPk(req.params.id, {
+      attributes: { exclude: ['userId'] },
+      include: {
+        model: User,
+        attributes: ['name']
+      }
+    })
 
     if (!blog) {
       return res.status(404).json({
