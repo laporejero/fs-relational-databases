@@ -15,12 +15,6 @@ router.post('/', async (req, res, next) => {
   try {
     const { author, url, title } = req.body
 
-    if (typeof author !== 'string') {
-      return res.status(400).json({
-        error: 'author must be a string'
-      })
-    }
-
     const blog = await Blog.create({
       author,
       url,

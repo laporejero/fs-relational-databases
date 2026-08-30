@@ -11,7 +11,14 @@ Blog.init({
     autoIncrement: true
   },
   author: {
-    type: DataTypes.TEXT
+    type: DataTypes.TEXT,
+    validate: {
+      isString(value) {
+        if (typeof value !== 'string') {
+          throw new Error('author must be a string')
+        }
+      }
+    }
   },
   url: {
     type: DataTypes.TEXT,
