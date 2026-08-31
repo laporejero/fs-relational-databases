@@ -12,12 +12,37 @@ const authorsRouter = require('./controllers/authors')
 const errorHandler = require('./middleware/errorHandler')
 const unknownEndpoint = require('./middleware/unknownEndpoint')
 
+const { Blog, User } = require('./models')
+
 app.use(express.json())
 
 app.use('/api/blogs', blogsRouter)
 app.use('/api/users', usersRouter)
 app.use('/api/login', loginRouter)
 app.use('/api/authors', authorsRouter)
+
+app.post('/api/reset', async (req, res, next) => {
+  try {
+    await Blog.destroy({
+      truncate: true,
+      restartIdentity: true
+    })
+
+    await User.destroy({
+      truncate: true,
+      restartIdentity: true,
+      cascade: true
+    })
+
+    res.status(204).end()
+  } catch (error) {
+    next(error)
+  }
+})
+
+app.get('/', (req, res) => {
+  res.status(200).end()
+})
 
 app.use(unknownEndpoint)
 app.use(errorHandler)
