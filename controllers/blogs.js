@@ -40,13 +40,14 @@ router.get('/', async (req, res, next) => {
 
 router.post('/', tokenExtractor, async (req, res, next) => {
   try {
-    const { author, url, title } = req.body
+    const { author, url, title, year } = req.body
 
     const user = await User.findByPk(req.decodedToken.id)
     const blog = await Blog.create({
       author,
       url,
       title,
+      year,
       userId: user.id
     })
 
