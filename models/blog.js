@@ -18,7 +18,8 @@ Blog.init({
           throw new Error('author must be a string')
         }
       }
-    }
+    },
+    allowNull: false
   },
   url: {
     type: DataTypes.TEXT,
