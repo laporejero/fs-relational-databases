@@ -12,7 +12,7 @@ const authorsRouter = require('./controllers/authors')
 const errorHandler = require('./middleware/errorHandler')
 const unknownEndpoint = require('./middleware/unknownEndpoint')
 
-const { Blog, User } = require('./models')
+const { Blog, User, ReadingList } = require('./models')
 
 app.use(express.json())
 
@@ -23,6 +23,11 @@ app.use('/api/authors', authorsRouter)
 
 app.post('/api/reset', async (req, res, next) => {
   try {
+    await ReadingList.destroy({
+      truncate: true,
+      restartIdentity: true
+    })
+
     await Blog.destroy({
       truncate: true,
       restartIdentity: true
