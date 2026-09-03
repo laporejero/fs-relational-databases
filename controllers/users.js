@@ -52,12 +52,20 @@ router.get('/:id', async (req, res, next) => {
             attributes: {
                 exclude: ['passwordHash']
             },
-            include: {
-                model: Blog,
-                attributes: {
-                    exclude: ['userId']
+            include: [
+                {
+                    model: Blog,
+                    attributes: { exclude: ['userId'] }
+                },
+                {
+                    model: Blog,
+                    as: 'added_blogs',
+                    attributes: { exclude: ['userId'] },
+                    through: {
+                        attributes: []
+                    }
                 }
-            }
+            ]
         })
 
         if (!user) {
