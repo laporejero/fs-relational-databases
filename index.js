@@ -30,7 +30,8 @@ app.post('/api/reset', async (req, res, next) => {
 
     await Blog.destroy({
       truncate: true,
-      restartIdentity: true
+      restartIdentity: true,
+      cascade: true
     })
 
     await User.destroy({
@@ -41,6 +42,7 @@ app.post('/api/reset', async (req, res, next) => {
 
     res.status(204).end()
   } catch (error) {
+    console.error(error)
     next(error)
   }
 })
