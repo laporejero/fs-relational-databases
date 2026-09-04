@@ -7,13 +7,13 @@ Blog.belongsTo(User)
 
 User.belongsToMany(Blog, { 
     through: ReadingList, 
-    as: 'added_blogs',
+    as: 'readings',
     foreignKey: 'user_id',
     otherKey: 'blog_id'
 })
 Blog.belongsToMany(User, { 
     through: ReadingList, 
-    as: 'users_added',
+    as: 'readers',
     foreignKey: 'blog_id',
     otherKey: 'user_id'
 })
