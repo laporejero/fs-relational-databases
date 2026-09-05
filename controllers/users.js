@@ -48,6 +48,8 @@ router.post('/', async (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
     try {
+        const { read } = req.query
+
         const user = await User.findByPk(req.params.id, {
             attributes: {
                 exclude: ['passwordHash']
@@ -62,7 +64,12 @@ router.get('/:id', async (req, res, next) => {
                     as: 'readings',
                     attributes: { exclude: ['userId'] },
                     through: {
-                        attributes: ['read', 'id']
+                        attributes: ['read', 'id'],
+                        ...(read !== undefined && {
+                            where: {
+                                read: read === 'true'
+                            }
+                        })
                     }
                 }
             ]
